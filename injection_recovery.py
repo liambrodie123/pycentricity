@@ -6,7 +6,7 @@ import numpy as np
 
 
 np.random.seed(54321)
-outdir = 'injection_recovery'
+outdir = '/home/isobel.romero-shaw/public_html/PYCENTRICITY/pycentricity/injection_recovery'
 label = 'injection'
 # injection parameters
 injection_parameters = dict(

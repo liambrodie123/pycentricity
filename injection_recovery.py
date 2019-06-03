@@ -5,7 +5,7 @@ import numpy as np
 
 
 np.random.seed(54321)
-outdir = 'python_code/injection_output'
+outdir = 'injection_recovery'
 label = 'injection'
 # injection parameters
 injection_parameters = dict(

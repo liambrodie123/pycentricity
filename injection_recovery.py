@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import bilby as bb
 import python_code.waveform as wf
 import python_code.overlap as ovlp

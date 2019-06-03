@@ -209,6 +209,16 @@ def new_weight(
     eccentricity_grid = np.logspace(
         np.log10(minimum_eccentricity), np.log10(0.2), grid_size
     )
+    # Recalculate the log likelihood of the original sample
+    recalculated_log_likelihood = log_likelihood_ratio(
+        comparison_waveform_frequency_domain, interferometers, parameters, duration
+    )
+    # Print a warning if this is much different to the likelihood stored in the results
+    if abs(recalculated_log_likelihood - log_L) / log_L > 0.1:
+        percentage = abs(recalculated_log_likelihood - log_L) / log_L * 100
+        print(
+            "WARNING :: recalculated log likelihood differs from original by {}%".format(percentage)
+        )
     log_likelihood_grid = []
     for e in eccentricity_grid:
         parameters.update({"eccentricity": e})
@@ -240,7 +250,8 @@ def new_weight(
     e = pick_weighted_random_eccentricity(cumulative_density_grid, eccentricity_grid)
     # Also return eccentricity-marginalised log-likelihood
     average_log_likelihood = np.mean(log_likelihood_grid)
-    log_weight = average_log_likelihood - log_L
+    # The weight is the ratio of this to the log likelihood
+    log_weight = average_log_likelihood - recalculated_log_likelihood
     return e, average_log_likelihood, log_weight
 
 

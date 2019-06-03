@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/home/isobel.romero-shaw/anaconda3/bin python
 import bilby as bb
 import python_code.waveform as wf
 import python_code.overlap as ovlp

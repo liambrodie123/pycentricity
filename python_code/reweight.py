@@ -216,7 +216,7 @@ def new_weight(
             parameters=parameters,
             sampling_frequency=sampling_frequency,
             minimum_frequency=minimum_frequency-10,
-            maximum_frequency=maximum_frequency,
+            maximum_frequency=maximum_frequency+1000,
         )
         seobnre_wf_td, seobnre_wf_fd, max_overlap, index_shift, phase_shift = ovlp.maximise_overlap(
             seobnre_waveform_time_domain,

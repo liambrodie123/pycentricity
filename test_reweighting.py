@@ -52,7 +52,7 @@ for ifo in ifos:
     data = data.resample(sampling_frequency)
     ifo.strain_data.set_from_gwpy_timeseries(data)
     ifo.power_spectral_density = bb.gw.detector.PowerSpectralDensity.from_power_spectral_density_file(
-        psd_file=utils.event_psd_file_path[event]
+        psd_file=utils.event_psd_file_path[event][ifo.name]
     )
     ifo.minimum_frequency = minimum_frequency
     ifo.maximum_frequency = maximum_frequency

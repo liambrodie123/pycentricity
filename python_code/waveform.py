@@ -56,7 +56,7 @@ def seobnre_bbh_with_spin_and_eccentricity(
             time-domain waveform polarisations
     """
     make = ["make"]
-    c_code = "/Users/irom0001/eccentricity/SEOBNRE/package/c_code/"
+    c_code = "/home/isobel.romero-shaw/public_html/PYCENTRICITY/pycentricity/c_code/"
     phiRef = parameters["phase"]
     m1 = parameters["mass_1"]
     m2 = parameters["mass_2"]

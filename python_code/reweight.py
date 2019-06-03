@@ -229,24 +229,9 @@ def new_weight(
             seobnre_wf_fd, interferometers
         )
 
-        print("max overlap: " + str(max_overlap))
-
         log_likelihood_grid.append(
             log_likelihood_ratio(seobnre_wf_fd, interferometers, parameters, duration)
         )
-
-    print("maximum log likelihood: ")
-    print(np.max(log_likelihood_grid))
-    print("at eccentricity:")
-    print(eccentricity_grid[np.argmax(log_likelihood_grid)])
-    print("original log likelihood:")
-    print(log_L)
-    print("recalculated original log likelihood:")
-    print(
-        log_likelihood_ratio(
-            comparison_waveform_frequency_domain, interferometers, parameters, duration
-        )
-    )
     # Now compute the CDF:
     cumulative_density_grid, de = cumulative_density_function(
         log_likelihood_grid, eccentricity_grid
@@ -255,11 +240,7 @@ def new_weight(
     e = pick_weighted_random_eccentricity(cumulative_density_grid, eccentricity_grid)
     # Also return eccentricity-marginalised log-likelihood
     average_log_likelihood = np.mean(log_likelihood_grid)
-    print("average log likelihood:")
-    print(average_log_likelihood)
     log_weight = average_log_likelihood - log_L
-    print("weight: ")
-    print(log_weight)
     return e, average_log_likelihood, log_weight
 
 
@@ -300,15 +281,10 @@ def reweight_by_eccentricity(
             dictionary of output from the reweighting procedure
     """
     number_of_samples = len(log_likelihood)
-    print("number of samples: ")
-    print(len(log_likelihood))
-    print("converting to binary black hole parameters")
     converted_samples, added_keys = bb.gw.conversion.convert_to_lal_binary_black_hole_parameters(
         samples
     )
-
     # List of parameters - this will be what we use to compute the highest overlap
-    print("constructing the list of parameter dictionaries")
     parameter_list = [
         dict(
             mass_1=converted_samples["mass_1"][i],
@@ -327,7 +303,6 @@ def reweight_by_eccentricity(
         for i in range(number_of_samples)
     ]
     # Generate the IMRPhenomD waveform for each sample
-    print("generating the IMRPhenomD waveform for each sample")
     comparison_waveform_strain_list = [
         comparison_waveform_generator.frequency_domain_strain(parameters)
         for parameters in parameter_list

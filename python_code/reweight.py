@@ -205,7 +205,7 @@ def new_weight(
             the log weight of the sample
     """
     # First calculate a grid of likelihoods.
-    grid_size = 5
+    grid_size = 20
     eccentricity_grid = np.logspace(
         np.log10(minimum_eccentricity), np.log10(0.2), grid_size
     )

@@ -101,7 +101,9 @@ def wrap_at_maximum(waveform, max_index_other_model):
     return waveform, shift
 
 
-def overlap_function(a, b, frequency, psd):
+def overlap_function(
+    a, b, frequency, psd, minimum_frequency=20, maximum_frequency=1024
+):
     """
     Calculate the overlap between two waveforms.
     :param a: dict
@@ -112,43 +114,50 @@ def overlap_function(a, b, frequency, psd):
         frequency array
     :param psd: array
         power spectral density array
+    :param minimum_frequency: int
+        minimum frequency at which to perform the calculation
+    :param maximum_frequency: int
+        maximum frequency at which to perform the calculation
     :return:
         overlap: float
             value of the overlap between the two waveforms
     """
     psd_interp = psd.power_spectral_density_interpolated(frequency)
     duration = 1.0 / (frequency[1] - frequency[0])
-
+    minimum_frequency_index = np.where(frequency >= minimum_frequency)[0][0]
+    maximum_frequency_index = np.where(frequency >= maximum_frequency)[0][0]
+    # Defining temporary arrays to use
+    _psd_interp = psd_interp[minimum_frequency_index:maximum_frequency_index]
+    _a = {
+        key: a[key][minimum_frequency_index:maximum_frequency_index] for key in a.keys()
+    }
+    _b = {
+        key: b[key][minimum_frequency_index:maximum_frequency_index] for key in b.keys()
+    }
+    # Doing the calculation
     inner_a = utils.noise_weighted_inner_product(
-        a["plus"], a["plus"], psd_interp, duration
+        _a["plus"], _a["plus"], _psd_interp, duration
     )
-
     inner_a += utils.noise_weighted_inner_product(
-        a["cross"], a["cross"], psd_interp, duration
+        _a["cross"], _a["cross"], _psd_interp, duration
     )
-
     inner_b = utils.noise_weighted_inner_product(
-        b["plus"], b["plus"], psd_interp, duration
+        _b["plus"], _b["plus"], _psd_interp, duration
     )
-
     inner_b += utils.noise_weighted_inner_product(
-        b["cross"], b["cross"], psd_interp, duration
+        _b["cross"], _b["cross"], _psd_interp, duration
     )
-
     inner_ab = utils.noise_weighted_inner_product(
-        a["plus"], b["plus"], psd_interp, duration
+        _a["plus"], _b["plus"], _psd_interp, duration
     )
-
     inner_ab += utils.noise_weighted_inner_product(
-        a["cross"], b["cross"], psd_interp, duration
+        _a["cross"], _b["cross"], _psd_interp, duration
     )
     overlap = inner_ab / np.sqrt(inner_a * inner_b)
     return overlap.real
 
 
-def zero_pad_frequency_domain_signal(
-    waveform_frequency_domain, interferometers
-):
+def zero_pad_frequency_domain_signal(waveform_frequency_domain, interferometers):
     """
     Mitigate the effects of spectral leakage
     :param waveform_frequency_domain: dict
@@ -160,12 +169,8 @@ def zero_pad_frequency_domain_signal(
             frequency-domain waveform polarisations
     """
     ifo = interferometers[0]
-    indices_to_zero_pad_low = np.where(
-        ifo.frequency_array < ifo.minimum_frequency
-    )[0]
-    indices_to_zero_pad_high = np.where(
-        ifo.frequency_array > ifo.maximum_frequency
-    )[0]
+    indices_to_zero_pad_low = np.where(ifo.frequency_array < ifo.minimum_frequency)[0]
+    indices_to_zero_pad_high = np.where(ifo.frequency_array > ifo.maximum_frequency)[0]
     for key in waveform_frequency_domain.keys():
         waveform_frequency_domain[key][indices_to_zero_pad_low] = 0
         waveform_frequency_domain[key][indices_to_zero_pad_high] = 0
@@ -333,10 +338,8 @@ def maximise_overlap(
             + np.abs(comparison_waveform_time_domain["cross"])
         )
     )
-    # Apply a window. This value of alpha (0.045) was found by trial and error to produce max initial overlap
-    waveform_time_domain = apply_tukey_window(
-        waveform_time_domain, alpha=0.045
-    )
+    # Apply a window
+    waveform_time_domain = apply_tukey_window(waveform_time_domain, alpha=0.05)
     # Do the signal processing
     waveform_time_domain = process_signal(
         waveform_time_domain,
@@ -474,10 +477,7 @@ def slow_overlap_optimize(
     waveform_grid_frequency = fourier_transform(waveform_grid_time, sampling_frequency)
     waveform_grid_shifted = [
         [
-            {
-                key: w[key] * np.exp(-2j * phase)
-                for key in waveform_time_domain.keys()
-            }
+            {key: w[key] * np.exp(-2j * phase) for key in waveform_time_domain.keys()}
             for w in waveform_grid_frequency
         ]
         for phase in phase_grid_init

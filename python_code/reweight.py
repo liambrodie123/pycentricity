@@ -217,7 +217,9 @@ def new_weight(
     if abs(recalculated_log_likelihood - log_L) / log_L > 0.1:
         percentage = abs(recalculated_log_likelihood - log_L) / log_L * 100
         print(
-            "WARNING :: recalculated log likelihood differs from original by {}%".format(percentage)
+            "WARNING :: recalculated log likelihood differs from original by {}%".format(
+                percentage
+            )
         )
     log_likelihood_grid = []
     for e in eccentricity_grid:
@@ -225,8 +227,8 @@ def new_weight(
         t, seobnre_waveform_time_domain = wf.seobnre_bbh_with_spin_and_eccentricity(
             parameters=parameters,
             sampling_frequency=sampling_frequency,
-            minimum_frequency=minimum_frequency-10,
-            maximum_frequency=maximum_frequency+1000,
+            minimum_frequency=minimum_frequency - 10,
+            maximum_frequency=maximum_frequency + 1000,
         )
         seobnre_wf_td, seobnre_wf_fd, max_overlap, index_shift, phase_shift = ovlp.maximise_overlap(
             seobnre_waveform_time_domain,

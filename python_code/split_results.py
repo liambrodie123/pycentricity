@@ -23,11 +23,10 @@ def result_subset(start_index, end_index, result):
             dictionary containing information about the result subset
     """
     samples = result.posterior
+    keys = result.search_parameter_keys
     log_likelihood = result.posterior.log_likelihood
-    subset_samples = {
-        key: samples[key][start_index:end_index] for key in samples.keys()
-    }
-    subset_log_likelihood = log_likelihood[start_index:end_index]
+    subset_samples = {key: samples[key][start_index:end_index].tolist() for key in keys}
+    subset_log_likelihood = log_likelihood[start_index:end_index].tolist()
     results_subset_dictionary = dict(
         samples=subset_samples, log_likelihoods=subset_log_likelihood
     )
@@ -43,6 +42,8 @@ def write_subset_to_file(start_index, end_index, result, output_file_path):
         the index at which to end the subset
     :param result: Result
         the result object
+    :param output_file_path: str
+        the path to the location in which to create output files
     """
     result_subset_dictionary = result_subset(start_index, end_index, result)
     output_file_path += "/result_subset_s{}_e{}.json".format(start_index, end_index)
@@ -51,25 +52,23 @@ def write_subset_to_file(start_index, end_index, result, output_file_path):
 
 
 def split_results_into_subsets(number_per_file, result_file):
+    """
+    Split a set of results into numerous subsets for easier computation
+    :param number_per_file: int
+        number of results to store per file
+    :param result_file: str
+        file path of results file
+    """
     # Work out where to store the output
     output_file_path_list = result_file.split("/")
     output_file_path = ""
     for string in output_file_path_list[0:-1]:
-        output_file_path += string
+        output_file_path += string + "/"
     # Get the result object
     result = bb.result.read_in_result(result_file)
     total_number_of_samples = len(result.posterior.log_likelihood)
-    print(total_number_of_samples)
     start_indices = np.arange(0, total_number_of_samples, number_per_file)
-    print(start_indices)
-    print(len(start_indices))
-    end_indices = np.arange(number_per_file, total_number_of_samples, number_per_file)
-    end_indices = np.concatenate((end_indices, [total_number_of_samples]))
-    print(end_indices)
-    print(len(end_indices))
-
-
-split_results_into_subsets(
-    50,
-    "/Users/irom0001/eccentricity/SEOBNRE/package/bilby_results/GW150914/dynesty_GW150914_IMRPhenomD_BWpsd_for_eccentricity_dynesty_fix_combined_result.json",
-)
+    for start_index in start_indices:
+        end_index = min(start_index + number_per_file, total_number_of_samples)
+        write_subset_to_file(start_index, end_index, result, output_file_path)
+    print("results split into subsets")

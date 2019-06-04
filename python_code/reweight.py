@@ -177,6 +177,7 @@ def new_weight(
     sampling_frequency,
     minimum_frequency,
     maximum_frequency,
+    label,
 ):
     """
     Compute the new weight for a point, weighted by the eccentricity-marginalised likelihood.
@@ -196,6 +197,8 @@ def new_weight(
         the minimum frequency at which the data is analysed
     :param maximum_frequency: int
         the maximum frequency at which the data is analysed
+    :param label: str
+        identifier for results
     :return:
         e: float
             the new eccentricity sample
@@ -222,28 +225,39 @@ def new_weight(
             )
         )
     log_likelihood_grid = []
-    for e in eccentricity_grid:
-        parameters.update({"eccentricity": e})
-        t, seobnre_waveform_time_domain = wf.seobnre_bbh_with_spin_and_eccentricity(
-            parameters=parameters,
-            sampling_frequency=sampling_frequency,
-            minimum_frequency=minimum_frequency - 10,
-            maximum_frequency=maximum_frequency + 1000,
-        )
-        seobnre_wf_td, seobnre_wf_fd, max_overlap, index_shift, phase_shift = ovlp.maximise_overlap(
-            seobnre_waveform_time_domain,
-            comparison_waveform_frequency_domain,
-            sampling_frequency,
-            interferometers[0].frequency_array,
-            interferometers[0].power_spectral_density,
-        )
-        seobnre_wf_fd = ovlp.zero_pad_frequency_domain_signal(
-            seobnre_wf_fd, interferometers
-        )
 
-        log_likelihood_grid.append(
-            log_likelihood_ratio(seobnre_wf_fd, interferometers, parameters, duration)
-        )
+    with open(label + "_eccentricity_result.txt", "w") as intermediate_outfile:
+        intermediate_outfile.write("e\t\tlog_L\t\tmaximised_overlap\n")
+        for e in eccentricity_grid:
+            parameters.update({"eccentricity": e})
+            t, seobnre_waveform_time_domain = wf.seobnre_bbh_with_spin_and_eccentricity(
+                parameters=parameters,
+                sampling_frequency=sampling_frequency,
+                minimum_frequency=minimum_frequency - 10,
+                maximum_frequency=maximum_frequency + 1000,
+            )
+            seobnre_wf_td, seobnre_wf_fd, max_overlap, index_shift, phase_shift = ovlp.maximise_overlap(
+                seobnre_waveform_time_domain,
+                comparison_waveform_frequency_domain,
+                sampling_frequency,
+                interferometers[0].frequency_array,
+                interferometers[0].power_spectral_density,
+            )
+            seobnre_wf_fd = ovlp.zero_pad_frequency_domain_signal(
+                seobnre_wf_fd, interferometers
+            )
+            eccentric_log_L = log_likelihood_ratio(
+                seobnre_wf_fd, interferometers, parameters, duration
+            )
+            log_likelihood_grid.append(eccentric_log_L)
+            intermediate_outfile.write(
+                str(e)
+                + "\t\t"
+                + str(eccentric_log_L)
+                + "\t\t"
+                + str(max_overlap)
+                + "\n"
+            )
     # Now compute the CDF:
     cumulative_density_grid, de = cumulative_density_function(
         log_likelihood_grid, eccentricity_grid
@@ -267,6 +281,7 @@ def reweight_by_eccentricity(
     duration,
     output_folder=".",
     maximum_frequency=0,
+    label="",
 ):
     """
     Function to return a dictionary containing the eccentricity-marginalised log likelihood,
@@ -289,6 +304,8 @@ def reweight_by_eccentricity(
         location to send the output
     :param maximum_frequency: int
         the maximum frequency of the analysis
+    :param label: str
+        identifier for results
     :return:
         output: dict
             dictionary of output from the reweighting procedure
@@ -323,9 +340,9 @@ def reweight_by_eccentricity(
     output = {key: [] for key in ["eccentricity", "new_log_L", "log_weight"]}
     # Write the output file along the way
     print("computing new weights... this may take some time.")
-    with open(output_folder + "/output_store.txt", "w") as outfile:
+    with open(output_folder + "/" + label + "_master_output_store.txt", "w") as outfile:
 
-        outfile.write("i\te\tnew_log_L\tlog_w\n")
+        outfile.write("i\t\te\t\tnew_log_L\t\tlog_w\n")
 
         for i, log_L in enumerate(log_likelihood):
             eccentricity, new_log_L, log_weight = new_weight(
@@ -337,14 +354,15 @@ def reweight_by_eccentricity(
                 sampling_frequency,
                 minimum_frequency,
                 maximum_frequency,
+                label + "_" + str(i),
             )
             outfile.write(
                 str(i)
-                + "\t"
+                + "\t\t"
                 + str(eccentricity)
-                + "\t"
+                + "\t\t"
                 + str(new_log_L)
-                + "\t"
+                + "\t\t"
                 + str(log_weight)
                 + "\n"
             )

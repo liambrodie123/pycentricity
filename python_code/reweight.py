@@ -227,6 +227,10 @@ def new_weight(
     log_likelihood_grid = []
 
     with open(label + "_eccentricity_result.txt", "w") as intermediate_outfile:
+        intermediate_outfile.write("sample parameters:\n")
+        for key in parameters.keys():
+            intermediate_outfile.write(key + ':\t' + str(parameters[key]) + '\n')
+        intermediate_outfile.write('\n-------------------------\n')
         intermediate_outfile.write("e\t\tlog_L\t\tmaximised_overlap\n")
         for e in eccentricity_grid:
             parameters.update({"eccentricity": e})
@@ -341,9 +345,7 @@ def reweight_by_eccentricity(
     # Write the output file along the way
     print("computing new weights... this may take some time.")
     with open(output_folder + "/" + label + "_master_output_store.txt", "w") as outfile:
-
         outfile.write("i\t\te\t\tnew_log_L\t\tlog_w\n")
-
         for i, log_L in enumerate(log_likelihood):
             eccentricity, new_log_L, log_weight = new_weight(
                 log_L,

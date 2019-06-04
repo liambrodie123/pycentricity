@@ -354,7 +354,7 @@ def reweight_by_eccentricity(
                 sampling_frequency,
                 minimum_frequency,
                 maximum_frequency,
-                label + "_" + str(i),
+                output_folder + "/" + label + "_" + str(i),
             )
             outfile.write(
                 str(i)

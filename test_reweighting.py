@@ -7,7 +7,7 @@ import gwpy
 
 date = '150914'
 event = 'GW' + date
-folder = "/home/isobel.romero-shaw/public_html/IMRPD_for_reweighting/" + date + "/results_dynesty_fix/result/"
+folder = "/home/isobel.romero-shaw/public_html/IMRPD_for_reweighting/" + date + "/results_dynesty_issue/result/"
 result = bb.result.read_in_result(
     folder
     + "dynesty_" + event + "_IMRPhenomD_BWpsd_for_eccentricity_dynesty_fix_combined_result.json"

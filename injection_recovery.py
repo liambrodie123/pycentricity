@@ -6,10 +6,8 @@ import numpy as np
 
 
 np.random.seed(54321)
-outdir = (
-    "/home/isobel.romero-shaw/public_html/PYCENTRICITY/pycentricity/injection_recovery"
-)
-label = "injection"
+outdir = '/home/isobel.romero-shaw/public_html/PYCENTRICITY/pycentricity/injection_recovery/pop_redundant_parameters'
+label = 'injection'
 # injection parameters
 injection_parameters = dict(
     mass_1=35.0,
@@ -69,18 +67,12 @@ interferometers.inject_signal(
 )
 # Set up priors
 priors = bb.gw.prior.BBHPriorDict()
-for key in ["mass_1", "mass_2"]:
+for key in ['mass_1', 'mass_2', 'a_1', 'a_2']:
     priors.pop(key)
-priors["mass_ratio"] = bb.core.prior.Uniform(
-    name="mass_ratio", minimum=0.125, maximum=1, boundary="reflective"
-)
-priors["chirp_mass"] = bb.core.prior.Uniform(
-    name="chirp_mass",
-    minimum=9.0,
-    maximum=69.9,
-    unit="$M_{\\odot}$",
-    boundary="reflective",
-)
+for key in ['theta_jn', 'theta_jl', 'tilt_1', 'tilt_2']:
+    priors[key] = 0
+priors['mass_ratio'] = bb.core.prior.Uniform(name='mass_ratio', minimum=0.125, maximum=1, boundary='reflective')
+priors['chirp_mass'] = bb.core.prior.Uniform(name='chirp_mass', minimum=9.0, maximum=69.9, unit='$M_{\\odot}$', boundary='reflective')
 # eccentricity = LogUniform(name='eccentricity', minimum=1e-4, maximum=0.2, boundary='reflective')
 priors["chi_1"] = bb.gw.prior.AlignedSpin(
     a_prior=bb.gw.prior.Uniform(0, 0.6),
@@ -140,4 +132,5 @@ result = bb.core.sampler.run_sampler(
     label=label,
 )
 # Plot corner
+result.samples = bb.gw.conversion.generate_posterior_samples_from_marginalized_likelihood(result.samples, likelihood)
 result.plot_corner()

@@ -66,6 +66,7 @@ folder = ''
 for string in folder_list[0:-1]:
     folder += string + '/'
 folder += 'weights/'
+bb.core.utils.check_directory_exists_and_if_not_mkdir(folder)
 label = folder_list[-1].split('.')[0]
 output = rwt.reweight_by_eccentricity(
     samples, log_likelihoods, sampling_frequency, minimum_frequency,

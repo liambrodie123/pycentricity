@@ -27,7 +27,6 @@ maximum_frequency = 1024
 sampling_frequency = 4096
 duration = utils.event_duration[event]
 post_trigger_duration = 2
-n_nodes = 5
 deltaT = 0.2
 
 detectors = utils.event_detectors[event]

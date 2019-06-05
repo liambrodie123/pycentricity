@@ -64,6 +64,7 @@ def split_results_into_subsets(number_per_file, result_file):
     output_file_path = ""
     for string in output_file_path_list[0:-1]:
         output_file_path += string + "/"
+    output_file_path += "subsets/"
     # Get the result object
     result = bb.result.read_in_result(result_file)
     total_number_of_samples = len(result.posterior.log_likelihood)

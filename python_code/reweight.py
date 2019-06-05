@@ -229,8 +229,8 @@ def new_weight(
     with open(label + "_eccentricity_result.txt", "w") as intermediate_outfile:
         intermediate_outfile.write("sample parameters:\n")
         for key in parameters.keys():
-            intermediate_outfile.write(key + ':\t' + str(parameters[key]) + '\n')
-        intermediate_outfile.write('\n-------------------------\n')
+            intermediate_outfile.write(key + ":\t" + str(parameters[key]) + "\n")
+        intermediate_outfile.write("\n-------------------------\n")
         intermediate_outfile.write("e\t\tlog_L\t\tmaximised_overlap\n")
         for e in eccentricity_grid:
             parameters.update({"eccentricity": e})
@@ -318,20 +318,25 @@ def reweight_by_eccentricity(
     converted_samples, added_keys = bb.gw.conversion.convert_to_lal_binary_black_hole_parameters(
         samples
     )
+    converted_samples = {
+        key: converted_samples[key].values.tolist()
+        for key in converted_samples.keys()
+        if type(converted_samples[key]) is not float
+    }
     # List of parameters - this will be what we use to compute the highest overlap
     parameter_list = [
         dict(
-            mass_1=converted_samples["mass_1"][i],
-            mass_2=converted_samples["mass_2"][i],
-            luminosity_distance=converted_samples["luminosity_distance"][i],
-            geocent_time=converted_samples["geocent_time"][i],
-            ra=converted_samples["ra"][i],
-            dec=converted_samples["dec"][i],
-            theta_jn=converted_samples["theta_jn"][i],
-            psi=converted_samples["psi"][i],
-            phase=converted_samples["phase"][i],
-            chi_1=converted_samples["chi_1"][i],
-            chi_2=converted_samples["chi_2"][i],
+            mass_1=converted_samples["mass_1"][i][0],
+            mass_2=converted_samples["mass_2"][i][0],
+            luminosity_distance=converted_samples["luminosity_distance"][i][0],
+            geocent_time=converted_samples["geocent_time"][i][0],
+            ra=converted_samples["ra"][i][0],
+            dec=converted_samples["dec"][i][0],
+            theta_jn=converted_samples["theta_jn"][i][0],
+            psi=converted_samples["psi"][i][0],
+            phase=converted_samples["phase"][i][0],
+            chi_1=converted_samples["chi_1"][i][0],
+            chi_2=converted_samples["chi_2"][i][0],
             eccentricity=minimum_eccentricity,
         )
         for i in range(number_of_samples)

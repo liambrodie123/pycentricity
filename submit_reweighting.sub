@@ -1,7 +1,17 @@
-executable = injection_recovery.py
+DATE = 150914
+EVENT = GW$(DATE)
+BASE_PATH = /home/isobel.romero-shaw/public_html
+N = 522
+
+executable = $(BASE_PATH)/PYCENTRICITY/pycentricity/reweight_results.py
 universe = vanilla
-output = ./output/injection_$(Process).out
-error = ./output/injection_$(Process).err
-log = ./output/injection_$(Process).log
+output = ./output/$(EVENT)_$(Process).out
+error = ./output/$(EVENT)_$(Process).err
+log = ./output/$(EVENT)_$(Process).log
+
+
+arguments = "-e $(EVENT) -r $(BASE_PATH)/IMRPD_for_reweighting/$(DATE)/results_dynesty_fix/result/subsets/result_$(Process).json"
+
 accounting_group = ligo.dev.o3.cbc.pe.lalinference
-queue number_of_subsets
+
+queue $(N)

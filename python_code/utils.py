@@ -122,3 +122,17 @@ minimum_frequency = dict(
     GW170818=20,
     GW170823=20,
 )
+
+search_keys = [
+    "mass_ratio",
+    "chirp_mass",
+    "chi_1",
+    "chi_2",
+    "dec",
+    "ra",
+    "theta_jn",
+    "psi",
+    "luminosity_distance",
+    "geocent_time",
+    "phase",
+]

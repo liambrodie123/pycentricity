@@ -1,4 +1,5 @@
 import bilby as bb
+import pandas as pd
 
 import python_code.utils as utils
 import python_code.reweight as rwt
@@ -10,17 +11,16 @@ import argparse
 
 
 # Set up the argument parser
-parser = argparse.ArgumentParser(
-    "Produce weights for one subset of a results file"
-)
-parser.add_argument('-e', '--event', help='GW-name of the event')
-parser.add_argument('-s', '--sub-result', help='Path of the sub-result file to use')
+parser = argparse.ArgumentParser("Produce weights for one subset of a results file")
+parser.add_argument("-e", "--event", help="GW-name of the event")
+parser.add_argument("-s", "--sub-result", help="Path of the sub-result file to use")
 args = parser.parse_args()
 
 # Access the samples
 json_data = json.load(open(args.sub_result))
-samples = json_data['samples']
-log_likelihoods = json_data['log_likelihoods']
+samples = json_data["samples"]
+samples = {key: pd.DataFrame(samples[key]) for key in samples.keys()}
+log_likelihoods = pd.DataFrame(json_data["log_likelihoods"])
 
 # Set up the basic properties of the runs
 maximum_frequency = 1024
@@ -46,7 +46,7 @@ interferometers = bb.gw.detector.InterferometerList(detectors)
 start = trigger_time + post_trigger_duration - duration
 end = start + duration
 channel_dict = {
-    key: key + ':' + utils.event_channels[args.event][key] for key in detectors
+    key: key + ":" + utils.event_channels[args.event][key] for key in detectors
 }
 for ifo in interferometers:
     data = gwpy.timeseries.TimeSeries.get(
@@ -61,17 +61,23 @@ for ifo in interferometers:
     ifo.maximum_frequency = maximum_frequency
 
 # Output to the folder with all of the result subsets
-folder_list = args.sub_result.split('/')
-folder = ''
+folder_list = args.sub_result.split("/")
+folder = ""
 for string in folder_list[0:-1]:
-    folder += string + '/'
-folder += 'weights/'
+    folder += string + "/"
+folder += "weights/"
 bb.core.utils.check_directory_exists_and_if_not_mkdir(folder)
-label = folder_list[-1].split('.')[0]
+label = folder_list[-1].split(".")[0]
 output = rwt.reweight_by_eccentricity(
-    samples, log_likelihoods, sampling_frequency, minimum_frequency,
-    waveform_generator, interferometers, duration, folder, maximum_frequency,
-    label=label
+    samples,
+    log_likelihoods,
+    sampling_frequency,
+    minimum_frequency,
+    waveform_generator,
+    interferometers,
+    duration,
+    folder,
+    maximum_frequency,
+    label=label,
 )
-print('Results weighted for file ' + args.sub_result + ' for event ' + args.event)
-
+print("Results weighted for file " + args.sub_result + " for event " + args.event)

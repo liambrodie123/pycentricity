@@ -4,6 +4,7 @@ A file for splitting a results file into the required subset for the pySEOBNRe p
 
 """
 
+import python_code.utils as utils
 import bilby as bb
 import numpy as np
 import json
@@ -23,7 +24,7 @@ def result_subset(start_index, end_index, result):
             dictionary containing information about the result subset
     """
     samples = result.posterior
-    keys = result.search_parameter_keys
+    keys = utils.search_keys
     log_likelihood = result.posterior.log_likelihood
     subset_samples = {key: samples[key][start_index:end_index].tolist() for key in keys}
     subset_log_likelihood = log_likelihood[start_index:end_index].tolist()

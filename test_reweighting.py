@@ -5,21 +5,25 @@ import python_code.utils as utils
 import gwpy
 
 
-date = '150914'
-event = 'GW' + date
-folder = "/home/isobel.romero-shaw/public_html/IMRPD_for_reweighting/" + date + "/results_dynesty_issue/result/"
+date = "150914"
+event = "GW" + date
+folder = (
+    "/home/isobel.romero-shaw/public_html/IMRPD_for_reweighting/"
+    + date
+    + "/results_dynesty_issue/result/"
+)
 result = bb.result.read_in_result(
     folder
-    + "dynesty_" + event + "_IMRPhenomD_BWpsd_for_eccentricity_dynesty_fix_combined_result.json"
+    + "dynesty_"
+    + event
+    + "_IMRPhenomD_BWpsd_for_eccentricity_dynesty_fix_combined_result.json"
 )
 samples = result.posterior
 log_likelihood = result.posterior.log_likelihood
 number_of_samples = len(log_likelihood)
 number_to_test = 3
 start_index = 3
-test_samples = {
-    key: samples[key][0:number_to_test] for key in samples.keys()
-}
+test_samples = {key: samples[key][0:number_to_test] for key in samples.keys()}
 test_log_likelihood = log_likelihood[0:number_to_test]
 minimum_frequency = utils.minimum_frequency[event]
 reference_frequency = 20
@@ -41,9 +45,7 @@ frequency_array = waveform_generator.frequency_array
 ifos = bb.gw.detector.InterferometerList(detectors)
 start = trigger_time + post_trigger_duration - duration
 end = start + duration
-channel_dict = {
-    key: key + ':' + utils.event_channels[event][key] for key in detectors
-}
+channel_dict = {key: key + ":" + utils.event_channels[event][key] for key in detectors}
 for ifo in ifos:
     data = gwpy.timeseries.TimeSeries.get(
         channel_dict[ifo.name], start, end, verbose=False
@@ -65,6 +67,6 @@ output = rwt.reweight_by_eccentricity(
     ifos,
     duration,
     folder,
-    maximum_frequency
+    maximum_frequency,
 )
 print(output)

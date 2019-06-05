@@ -34,7 +34,7 @@ def result_subset(start_index, end_index, result):
     return results_subset_dictionary
 
 
-def write_subset_to_file(start_index, end_index, result, output_file_path):
+def write_subset_to_file(start_index, end_index, result, index, output_file_path):
     """
     Save a certain subset to a file.
     :param start_index: int
@@ -47,7 +47,7 @@ def write_subset_to_file(start_index, end_index, result, output_file_path):
         the path to the location in which to create output files
     """
     result_subset_dictionary = result_subset(start_index, end_index, result)
-    output_file_path += "/result_subset_s{}_e{}.json".format(start_index, end_index)
+    output_file_path += "/result_{}.json".format(index)
     with open(output_file_path, "w") as f:
         json.dump(result_subset_dictionary, f)
 
@@ -71,7 +71,7 @@ def split_results_into_subsets(number_per_file, result_file):
     result = bb.result.read_in_result(result_file)
     total_number_of_samples = len(result.posterior.log_likelihood)
     start_indices = np.arange(0, total_number_of_samples, number_per_file)
-    for start_index in start_indices:
+    for i, start_index in enumerate(start_indices):
         end_index = min(start_index + number_per_file, total_number_of_samples)
-        write_subset_to_file(start_index, end_index, result, output_file_path)
-    print("results split into subsets")
+        write_subset_to_file(start_index, end_index, result, i, output_file_path)
+    print("results split into {} subsets".format(i))

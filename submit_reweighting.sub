@@ -1,0 +1,7 @@
+executable = injection_recovery.py
+universe = vanilla
+output = ./output/injection_$(Process).out
+error = ./output/injection_$(Process).err
+log = ./output/injection_$(Process).log
+accounting_group = ligo.dev.o3.cbc.pe.lalinference
+queue number_of_subsets

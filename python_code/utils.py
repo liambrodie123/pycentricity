@@ -72,10 +72,8 @@ event_psd_file_path = dict(
         L1=psd_files_base_path + "O2/PE/GW170729/Median_PSD_L1.dat",
     ),
     GW170809=dict(
-        H1=psd_files_base_path
-        + "/home/isobel.romero-shaw/public_html/known_events/GW170809/dynesty_isobel_defaults/GW170809_LIGO_Hanford_PSD1Hz_psd.txt",
-        L1=psd_files_base_path
-        + "/home/isobel.romero-shaw/public_html/known_events/GW170809/dynesty_isobel_defaults/GW170809_LIGO_Livingston_PSD1Hz_psd.txt",
+        H1="/home/isobel.romero-shaw/public_html/known_events/GW170809/dynesty_isobel_defaults/GW170809_LIGO_Hanford_PSD1Hz_psd.txt",
+        L1="/home/isobel.romero-shaw/public_html/known_events/GW170809/dynesty_isobel_defaults/GW170809_LIGO_Livingston_PSD1Hz_psd.txt",
     ),
     GW170814=dict(
         H1=psd_files_base_path + "O2/PE/GW170814/BayesWave_median_PSD_H1.dat",

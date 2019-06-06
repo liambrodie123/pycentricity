@@ -179,7 +179,7 @@ def zero_pad_frequency_domain_signal(waveform_frequency_domain, interferometers)
 
 def process_signal(waveform, comparison_length):
     """
-    Zero-pad a waveform to a certain length.
+    Zero-pad a waveform to a certain length, or truncate it if it is too long.
     :param waveform: dict
         time-domain waveform polarisations
     :param comparison_length: int
@@ -188,9 +188,16 @@ def process_signal(waveform, comparison_length):
         waveform: dict
             zero-padded time-domain waveform polarisations
     """
-    n_indices_to_pad = comparison_length - len(waveform["plus"])
-    waveform["plus"] = np.concatenate(([0] * n_indices_to_pad, waveform["plus"]))
-    waveform["cross"] = np.concatenate(([0] * n_indices_to_pad, waveform["cross"]))
+    waveform_length = len(waveform['plus'])
+    if waveform_length != comparison_length:
+        if waveform_length < comparison_length:
+            n_indices_to_pad = comparison_length - waveform_length
+            waveform["plus"] = np.concatenate(([0] * n_indices_to_pad, waveform["plus"]))
+            waveform["cross"] = np.concatenate(([0] * n_indices_to_pad, waveform["cross"]))
+        elif waveform_length > comparison_length:
+            n_indices_to_remove = waveform_length - comparison_length
+            waveform['plus'] = waveform['plus'][n_indices_to_remove:]
+            waveform['cross'] = waveform['cross'][n_indices_to_remove:]
     return waveform
 
 

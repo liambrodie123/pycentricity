@@ -4,13 +4,7 @@
 """
 
 import bilby as bb
-import pandas as pd
-
 import python_code.utils as utils
-import python_code.reweight as rwt
-import python_code.waveform as wf
-
-import json
 import gwpy
 import argparse
 
@@ -48,5 +42,3 @@ for ifo in interferometers:
             f.write(str(t) + ',' + str(ifo.time_domain_strain[i]) + '\n')
 
 interferometers.save_data(outdir=outdir, label=args.event)
-interferometers.plot_data()
-

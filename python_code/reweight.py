@@ -263,6 +263,7 @@ def new_weight(
             + str(max_overlap)
             + "\n"
         )
+    intermediate_outfile.close()
     # Now compute the CDF:
     cumulative_density_grid, de = cumulative_density_function(
         log_likelihood_grid, eccentricity_grid
@@ -365,6 +366,16 @@ def reweight_by_eccentricity(
             maximum_frequency,
             output_folder + "/" + label + "_" + str(i),
         )
+        print("writing to outfile:")
+        print(str(i)
+                + "\t\t"
+                + str(eccentricity)
+                + "\t\t"
+                + str(new_log_L)
+                + "\t\t"
+                + str(log_weight)
+                + "\n"
+              )
         outfile.write(
             str(i)
             + "\t\t"
@@ -375,6 +386,7 @@ def reweight_by_eccentricity(
             + str(log_weight)
             + "\n"
         )
+        print('written')
         output["eccentricity"].append(eccentricity)
         output["new_log_L"].append(new_log_L)
         output["log_weight"].append(log_weight)

@@ -18,7 +18,7 @@ args = parser.parse_args()
 json_data = json.load(open(args.sub_result))
 samples = json_data["samples"]
 samples = {key: pd.DataFrame(samples[key]) for key in samples.keys()}
-log_likelihoods = pd.DataFrame(json_data["log_likelihoods"])
+log_likelihoods = json_data["log_likelihoods"]
 
 # Set up the basic properties of the runs
 maximum_frequency = 1024

@@ -49,13 +49,9 @@ channel_dict = {
     key: key + ":" + utils.event_channels[args.event][key] for key in detectors
 }
 for ifo in interferometers:
-    data = gwpy.timeseries.TimeSeries.get(
-        channel_dict[ifo.name], start, end, verbose=False
-    )
-    data = data.resample(sampling_frequency)
-    ifo.strain_data.set_from_gwpy_timeseries(data)
-    ifo.power_spectral_density = bb.gw.detector.PowerSpectralDensity.from_power_spectral_density_file(
-        psd_file=utils.event_psd_file_path[args.event][ifo.name]
+    ifo.set_strain_data_from_csv(
+        '/home/isobel.romero-shaw/public_html/PYCENTRICITY/pycentricity/submissions/'
+        + args.event + '/event_data/' + ifo.name + '_time_domain_strain_data.csv'
     )
     ifo.minimum_frequency = minimum_frequency
     ifo.maximum_frequency = maximum_frequency
@@ -63,7 +59,7 @@ for ifo in interferometers:
 # Output to the folder with all of the result subsets
 folder_list = args.sub_result.split("/")
 folder = ""
-for string in folder_list[0:-1]:
+for string in folder_list[0:-2]:
     folder += string + "/"
 folder += "weights/"
 bb.core.utils.check_directory_exists_and_if_not_mkdir(folder)

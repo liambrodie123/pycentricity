@@ -52,7 +52,7 @@ for ifo in interferometers:
 # Output to the folder with all of the result subsets
 folder_list = args.sub_result.split("/")
 folder = ""
-for string in folder_list[0:-1]:
+for string in folder_list[0:-2]:
     folder += string + "/"
 folder += "weights/"
 bb.core.utils.check_directory_exists_and_if_not_mkdir(folder)

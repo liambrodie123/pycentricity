@@ -224,6 +224,8 @@ def new_weight(
                 percentage
             )
         )
+        print('original log L: ' + str(log_L))
+        print('recalculated log L: ' + str(recalculated_log_likelihood))
     log_likelihood_grid = []
 
     with open(label + "_eccentricity_result.txt", "w") as intermediate_outfile:

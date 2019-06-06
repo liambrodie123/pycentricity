@@ -32,13 +32,14 @@ channel_dict = {
 }
 bb.core.utils.check_directory_exists_and_if_not_mkdir(outdir)
 for ifo in interferometers:
-    data = gwpy.timeseries.TimeSeries.get(
-        channel_dict[ifo.name], start, end, verbose=False
-    )
+    try:
+        data = gwpy.timeseries.TimeSeries.get(
+            channel_dict[ifo.name], start, end, verbose=False
+        )
+    except gwpy.timeseries.core.NDSWarning:
+        data = gwpy.timeseries.TimeSeries.fetch_open_data(ifo.name, start, end)
     data = data.resample(sampling_frequency)
     ifo.strain_data.set_from_gwpy_timeseries(data)
     with open(outdir + '/' + ifo.name + '_time_domain_strain_data.csv', 'w') as f:
         for i, t in enumerate(ifo.time_array):
             f.write(str(t) + ',' + str(ifo.time_domain_strain[i]) + '\n')
-
-interferometers.save_data(outdir=outdir, label=args.event)

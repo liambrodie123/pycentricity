@@ -4,6 +4,7 @@ import pandas as pd
 
 import python_code.reweight as rwt
 import python_code.waveform as wf
+import numpy as np
 
 import json
 import argparse
@@ -43,7 +44,7 @@ interferometers = bb.gw.detector.InterferometerList(detectors)
 interferometers.set_strain_data_from_power_spectral_densities(
     sampling_frequency=sampling_frequency,
     duration=duration,
-    start_time=-6,
+    start_time=samples['geocent_time'].iloc(np.argmax(log_likelihoods))-6,
 )
 for ifo in interferometers:
     ifo.minimum_frequency = minimum_frequency

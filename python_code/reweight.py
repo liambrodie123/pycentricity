@@ -227,43 +227,42 @@ def new_weight(
         print('original log L: ' + str(log_L))
         print('recalculated log L: ' + str(recalculated_log_likelihood))
     log_likelihood_grid = []
-
-    with open(label + "_eccentricity_result.txt", "w") as intermediate_outfile:
-        intermediate_outfile.write("sample parameters:\n")
-        for key in parameters.keys():
-            intermediate_outfile.write(key + ":\t" + str(parameters[key]) + "\n")
-        intermediate_outfile.write("\n-------------------------\n")
-        intermediate_outfile.write("e\t\tlog_L\t\tmaximised_overlap\n")
-        for e in eccentricity_grid:
-            parameters.update({"eccentricity": e})
-            t, seobnre_waveform_time_domain = wf.seobnre_bbh_with_spin_and_eccentricity(
-                parameters=parameters,
-                sampling_frequency=sampling_frequency,
-                minimum_frequency=minimum_frequency - 10,
-                maximum_frequency=maximum_frequency + 1000,
-            )
-            seobnre_wf_td, seobnre_wf_fd, max_overlap, index_shift, phase_shift = ovlp.maximise_overlap(
-                seobnre_waveform_time_domain,
-                comparison_waveform_frequency_domain,
-                sampling_frequency,
-                interferometers[0].frequency_array,
-                interferometers[0].power_spectral_density,
-            )
-            seobnre_wf_fd = ovlp.zero_pad_frequency_domain_signal(
-                seobnre_wf_fd, interferometers
-            )
-            eccentric_log_L = log_likelihood_ratio(
-                seobnre_wf_fd, interferometers, parameters, duration
-            )
-            log_likelihood_grid.append(eccentric_log_L)
-            intermediate_outfile.write(
-                str(e)
-                + "\t\t"
-                + str(eccentric_log_L)
-                + "\t\t"
-                + str(max_overlap)
-                + "\n"
-            )
+    intermediate_outfile = open(label + "_eccentricity_result.txt", "w")
+    intermediate_outfile.write("sample parameters:\n")
+    for key in parameters.keys():
+        intermediate_outfile.write(key + ":\t" + str(parameters[key]) + "\n")
+    intermediate_outfile.write("\n-------------------------\n")
+    intermediate_outfile.write("e\t\tlog_L\t\tmaximised_overlap\n")
+    for e in eccentricity_grid:
+        parameters.update({"eccentricity": e})
+        t, seobnre_waveform_time_domain = wf.seobnre_bbh_with_spin_and_eccentricity(
+            parameters=parameters,
+            sampling_frequency=sampling_frequency,
+            minimum_frequency=minimum_frequency - 10,
+            maximum_frequency=maximum_frequency + 1000,
+        )
+        seobnre_wf_td, seobnre_wf_fd, max_overlap, index_shift, phase_shift = ovlp.maximise_overlap(
+            seobnre_waveform_time_domain,
+            comparison_waveform_frequency_domain,
+            sampling_frequency,
+            interferometers[0].frequency_array,
+            interferometers[0].power_spectral_density,
+        )
+        seobnre_wf_fd = ovlp.zero_pad_frequency_domain_signal(
+            seobnre_wf_fd, interferometers
+        )
+        eccentric_log_L = log_likelihood_ratio(
+            seobnre_wf_fd, interferometers, parameters, duration
+        )
+        log_likelihood_grid.append(eccentric_log_L)
+        intermediate_outfile.write(
+            str(e)
+            + "\t\t"
+            + str(eccentric_log_L)
+            + "\t\t"
+            + str(max_overlap)
+            + "\n"
+        )
     # Now compute the CDF:
     cumulative_density_grid, de = cumulative_density_function(
         log_likelihood_grid, eccentricity_grid
@@ -351,37 +350,38 @@ def reweight_by_eccentricity(
     output = {key: [] for key in ["eccentricity", "new_log_L", "log_weight"]}
     # Write the output file along the way
     print("computing new weights... this may take some time.")
-    with open(output_folder + "/" + label + "_master_output_store.txt", "w") as outfile:
-        outfile.write("i\t\te\t\tnew_log_L\t\tlog_w\n")
-        for i, log_L in enumerate(log_likelihood):
-            print('sample ' + str(i))
-            eccentricity, new_log_L, log_weight = new_weight(
-                log_L,
-                parameter_list[i],
-                comparison_waveform_strain_list[i],
-                interferometers,
-                duration,
-                sampling_frequency,
-                minimum_frequency,
-                maximum_frequency,
-                output_folder + "/" + label + "_" + str(i),
+    outfile = open(output_folder + "/" + label + "_master_output_store.txt", "w")
+    outfile.write("i\t\te\t\tnew_log_L\t\tlog_w\n")
+    for i, log_L in enumerate(log_likelihood):
+        print('sample ' + str(i))
+        eccentricity, new_log_L, log_weight = new_weight(
+            log_L,
+            parameter_list[i],
+            comparison_waveform_strain_list[i],
+            interferometers,
+            duration,
+            sampling_frequency,
+            minimum_frequency,
+            maximum_frequency,
+            output_folder + "/" + label + "_" + str(i),
+        )
+        outfile.write(
+            str(i)
+            + "\t\t"
+            + str(eccentricity)
+            + "\t\t"
+            + str(new_log_L)
+            + "\t\t"
+            + str(log_weight)
+            + "\n"
+        )
+        output["eccentricity"].append(eccentricity)
+        output["new_log_L"].append(new_log_L)
+        output["log_weight"].append(log_weight)
+        print(
+            "new weight calculation {}% complete".format(
+                np.round(i / number_of_samples * 100, 2)
             )
-            outfile.write(
-                str(i)
-                + "\t\t"
-                + str(eccentricity)
-                + "\t\t"
-                + str(new_log_L)
-                + "\t\t"
-                + str(log_weight)
-                + "\n"
-            )
-            output["eccentricity"].append(eccentricity)
-            output["new_log_L"].append(new_log_L)
-            output["log_weight"].append(log_weight)
-            print(
-                "new weight calculation {}% complete".format(
-                    np.round(i / number_of_samples * 100, 2)
-                )
-            )
+        )
+    outfile.close()
     return output

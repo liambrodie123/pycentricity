@@ -6,8 +6,7 @@ A file for generating waveforms and related objects for the pySEOBNRe package.
 
 import subprocess
 import matplotlib.pyplot as plt
-from scipy import signal
-import numpy as np
+import time
 import bilby as bb
 
 
@@ -72,8 +71,9 @@ def seobnre_bbh_with_spin_and_eccentricity(
     s2z = parameters["chi_2"]
     s2y = 0
     s2x = 0
-    outfile_name = "simulation_" + "{}_{}_{}_{}_{}_{}_{}.dat".format(
-        m1, m2, distance, e0, inclination, s1z, s2z
+    # Create outfile
+    outfile_name = "simulation_" + "{}_{}_{}_{}_{}_{}_{}_{}_{}.dat".format(
+        m1, m2, distance, phiRef, e0, inclination, s1z, s2z, time.clock()
     )
     # Generate the SEOBNRe time-domain waveform
     execute = (

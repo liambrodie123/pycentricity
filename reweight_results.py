@@ -54,6 +54,9 @@ for ifo in interferometers:
         '/home/isobel.romero-shaw/public_html/PYCENTRICITY/pycentricity/submissions/'
         + args.event + '/event_data/' + ifo.name + '_time_domain_strain_data.csv'
     )
+    ifo.power_spectral_density = bb.gw.detector.PowerSpectralDensity.from_power_spectral_density_file(
+        psd_file=utils.event_psd_file_path[args.event][ifo.name]
+    )
     ifo.minimum_frequency = minimum_frequency
     ifo.maximum_frequency = maximum_frequency
 

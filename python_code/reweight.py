@@ -354,6 +354,7 @@ def reweight_by_eccentricity(
     with open(output_folder + "/" + label + "_master_output_store.txt", "w") as outfile:
         outfile.write("i\t\te\t\tnew_log_L\t\tlog_w\n")
         for i, log_L in enumerate(log_likelihood):
+            print('sample ' + str(i))
             eccentricity, new_log_L, log_weight = new_weight(
                 log_L,
                 parameter_list[i],

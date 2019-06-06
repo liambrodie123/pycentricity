@@ -1,3 +1,4 @@
+#!/home/isobel.romero-shaw/anaconda3/bin/python3.6
 import bilby as bb
 import pandas as pd
 

@@ -11,7 +11,7 @@ import python_code.waveform as wf
 import numpy.random as random
 
 np.random.seed(3)
-minimum_eccentricity = 1e-5
+minimum_eccentricity = 1e-4
 
 
 def log_likelihood_interferometer(
@@ -145,27 +145,25 @@ def pick_weighted_random_eccentricity(cumulative_density_grid, eccentricity_grid
 def cumulative_density_function(log_likelihood_grid, eccentricity_grid):
     """
     Return a cumulative density function over a grid of eccentricities.
-    :param cumulative_density_grid: array
-        1D grid of cumulative densities
+    :param log_likelihood_grid: array
+        1D grid of log likelihoods
     :param eccentricity_grid: array
         1D grid of eccentricities
     :return:
-        cumulative_density: array
-            1D grid of cumulative densities
-        de: array
-            1D grid of delta e
+    cumulative_density: array
+        1D grid of cumulative densities
     """
     eccentricity_grid_len = len(eccentricity_grid)
-    de = [
-        eccentricity_grid[i] - eccentricity_grid[i - 1]
-        for i in range(1, eccentricity_grid_len)
-    ]
-    de = np.concatenate(([eccentricity_grid[0]], de))
+    # Normalise to all positive
+    if np.min(log_likelihood_grid) < 0:
+        log_likelihood_grid = log_likelihood_grid + abs(np.min(log_likelihood_grid))
+    # Normalise so that sum = 1
+    log_likelihood_grid = log_likelihood_grid / np.sum(log_likelihood_grid)
     cumulative_density = [
-        np.sum(np.multiply(log_likelihood_grid[0:i], de[0:i]))
+        np.sum(log_likelihood_grid[0:i])
         for i in range(eccentricity_grid_len)
     ]
-    return cumulative_density, de
+    return cumulative_density
 
 
 def new_weight(

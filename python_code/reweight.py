@@ -263,7 +263,7 @@ def new_weight(
         )
     intermediate_outfile.close()
     # Now compute the CDF:
-    cumulative_density_grid, de = cumulative_density_function(
+    cumulative_density_grid = cumulative_density_function(
         log_likelihood_grid, eccentricity_grid
     )
     # We want to pick a weighted random point from within the CDF

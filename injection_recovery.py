@@ -3,10 +3,15 @@ import bilby as bb
 import python_code.waveform as wf
 import python_code.overlap as ovlp
 import numpy as np
+import argparse
 
+# Set up the argument parser
+parser = argparse.ArgumentParser("")
+parser.add_argument("-i", "--index", help="")
+args = parser.parse_args()
 
-np.random.seed(54321)
-outdir = '/home/isobel.romero-shaw/public_html/PYCENTRICITY/pycentricity/injection_recovery/pop_redundant_parameters'
+np.random.seed(54321 + int(args.index))
+outdir = '/home/isobel.romero-shaw/public_html/PYCENTRICITY/pycentricity/injection_recovery/no_marginalization_' + args.index
 label = 'injection'
 # injection parameters
 injection_parameters = dict(
@@ -116,9 +121,6 @@ priors["geocent_time"] = bb.core.prior.Uniform(
 likelihood = bb.gw.likelihood.GravitationalWaveTransient(
     interferometers,
     comparison_waveform_generator,
-    time_marginalization=True,
-    phase_marginalization=True,
-    distance_marginalization=True,
     priors=priors,
 )
 # Launch sampler
@@ -132,5 +134,4 @@ result = bb.core.sampler.run_sampler(
     label=label,
 )
 # Plot corner
-result.samples = bb.gw.conversion.generate_posterior_samples_from_marginalized_likelihood(result.samples, likelihood)
 result.plot_corner()

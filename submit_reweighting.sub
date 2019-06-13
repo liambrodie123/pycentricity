@@ -10,7 +10,7 @@ error = ./output/$(EVENT)_$(Process).err
 log = ./output/$(EVENT)_$(Process).log
 
 
-arguments = "-e $(EVENT) -r $(BASE_PATH)/IMRPD_for_reweighting/$(DATE)/results_dynesty_fix/result/subsets/result_$(Process).json"
+arguments = "-e $(EVENT) -s $(BASE_PATH)/IMRPD_for_reweighting/$(DATE)/results_dynesty_fix/result/subsets/result_$(Process).json"
 
 accounting_group = ligo.dev.o3.cbc.pe.lalinference
 

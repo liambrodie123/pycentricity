@@ -3,15 +3,10 @@ import bilby as bb
 import python_code.waveform as wf
 import python_code.overlap as ovlp
 import numpy as np
-import argparse
 
-# Set up the argument parser
-parser = argparse.ArgumentParser("")
-parser.add_argument("-i", "--index", help="")
-args = parser.parse_args()
 
-np.random.seed(54321 + int(args.index))
-outdir = '/home/isobel.romero-shaw/public_html/PYCENTRICITY/pycentricity/injection_recovery/no_marginalization_' + args.index
+np.random.seed(54321)
+outdir = '/home/isobel.romero-shaw/public_html/PYCENTRICITY/pycentricity/injection_recovery/pop_redundant_parameters'
 label = 'injection'
 # injection parameters
 injection_parameters = dict(
@@ -117,21 +112,26 @@ priors["geocent_time"] = bb.core.prior.Uniform(
     minimum=injection_parameters["geocent_time"] - (deltaT / 2),
     maximum=injection_parameters["geocent_time"] + (deltaT / 2),
 )
+print('initializing likelihood')
 # Likelihood
 likelihood = bb.gw.likelihood.GravitationalWaveTransient(
     interferometers,
     comparison_waveform_generator,
+    time_marginalization=True,
+    phase_marginalization=True,
+    distance_marginalization=True,
     priors=priors,
 )
-# Launch sampler
-result = bb.core.sampler.run_sampler(
-    likelihood,
-    priors,
-    sampler="dynesty",
-    npoints=2000,
-    walks=200,
-    outdir=outdir,
-    label=label,
+print('reading in results')
+result = bb.result.read_in_result("injection_recovery/old_injection_result.json")
+print(result.posterior.keys())
+old_samples = result.posterior
+new_samples = bb.gw.conversion.generate_posterior_samples_from_marginalized_likelihood(
+        old_samples, likelihood
 )
-# Plot corner
+result.posterior = new_samples
+print(result.posterior.keys()) 
+print('plotting')
+result.plot_corner(filename='injection_recovery/new_result_corner.png')
+result.save_to_file()
 result.plot_corner()

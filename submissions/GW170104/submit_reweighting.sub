@@ -1,14 +1,14 @@
-DATE = 150914
+DATE = 170104
 EVENT = GW$(DATE)
 BASE_PATH = /home/isobel.romero-shaw/public_html
-N = 522
+HERE = /home/isobel.romero-shaw/public_html/PYCENTRICITY/pycentricity/submissions/$(EVENT)
+N = 4509
 
 executable = $(BASE_PATH)/PYCENTRICITY/pycentricity/reweight_results.py
 universe = vanilla
-output = ./output/$(EVENT)_$(Process).out
-error = ./output/$(EVENT)_$(Process).err
-log = ./output/$(EVENT)_$(Process).log
-
+output = $(HERE)/output/$(EVENT)_$(Process).out
+error = $(HERE)/output/$(EVENT)_$(Process).err
+log = $(HERE)/output/$(EVENT)_$(Process).log
 
 arguments = "-e $(EVENT) -s $(BASE_PATH)/IMRPD_for_reweighting/$(DATE)/results_dynesty_fix/result/subsets/result_$(Process).json"
 

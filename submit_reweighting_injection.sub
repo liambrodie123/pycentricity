@@ -1,0 +1,15 @@
+BASE_PATH = /home/isobel.romero-shaw/public_html
+N = 490
+
+executable = $(BASE_PATH)/PYCENTRICITY/pycentricity/reweight_injection.py
+universe = vanilla
+output = ./injection_recovery/reweighting_output/injection_set_$(Process).out
+error = ./injection_recovery/reweighting_output/injection_set_$(Process).err
+log = ./injection_recovery/reweighting_output/injection_set_$(Process).log
+
+
+arguments = "-s $(BASE_PATH)/PYCENTRICITY/pycentricity/injection_recovery/subsets/result_$(Process).json"
+
+accounting_group = ligo.dev.o3.cbc.pe.lalinference
+
+queue $(N)

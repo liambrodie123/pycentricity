@@ -1,0 +1,9 @@
+N = 3
+executable = injection_recovery.py
+universe = vanilla
+output = injection_recovery/no_marginalization_$(Process)/injection.out
+error = injection_recovery/no_marginalization_$(Process)/injection.err
+log = injection_recovery//no_marginalization_$(Process)/injection.log
+accounting_group = ligo.dev.o2.cbc.pe.lalinference
+arguments = "-i $(Process)"
+queue $(N)

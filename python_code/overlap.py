@@ -192,12 +192,14 @@ def process_signal(waveform, comparison_length):
     if waveform_length != comparison_length:
         if waveform_length < comparison_length:
             n_indices_to_pad = comparison_length - waveform_length
-            waveform["plus"] = np.concatenate(([0] * n_indices_to_pad, waveform["plus"]))
-            waveform["cross"] = np.concatenate(([0] * n_indices_to_pad, waveform["cross"]))
+            waveform = {
+                key: np.concatenate(([0] * n_indices_to_pad, waveform["plus"])) for key in waveform.keys()
+            }
         elif waveform_length > comparison_length:
             n_indices_to_remove = waveform_length - comparison_length
-            waveform['plus'] = waveform['plus'][n_indices_to_remove:]
-            waveform['cross'] = waveform['cross'][n_indices_to_remove:]
+            waveform  = {
+                key: waveform[key][n_indices_to_remove:] for key in waveform.keys()
+            }
     return waveform
 
 
@@ -212,12 +214,17 @@ def apply_tukey_window(waveform, alpha):
         waveform: dict
             time-domain waveform polarisations
     """
+    # First add some zeroes onto the upper end of the time series, to avoid the merge being swallowed by the window
+    waveform = {
+        key: np.concatenate((waveform[key], [0] * int(len(waveform['plus']) * alpha))) for key in waveform.keys()
+    }
+    waveform_length = len(waveform['plus'])
     waveform = dict(
         plus=np.multiply(
-            signal.tukey(M=len(waveform["plus"]), alpha=alpha), waveform["plus"]
+            signal.tukey(M=waveform_length, alpha=alpha), waveform["plus"]
         ),
         cross=np.multiply(
-            signal.tukey(M=len(waveform["cross"]), alpha=alpha), waveform["cross"]
+            signal.tukey(M=waveform_length, alpha=alpha), waveform["cross"]
         ),
     )
     return waveform

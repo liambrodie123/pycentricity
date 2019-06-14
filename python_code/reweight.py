@@ -142,28 +142,19 @@ def pick_weighted_random_eccentricity(cumulative_density_grid, eccentricity_grid
             return random_eccentricity
 
 
-def cumulative_density_function(log_likelihood_grid, eccentricity_grid):
+def cumulative_density_function(log_likelihood_grid):
     """
     Return a cumulative density function over a grid of eccentricities.
     :param log_likelihood_grid: array
         1D grid of log likelihoods
-    :param eccentricity_grid: array
-        1D grid of eccentricities
     :return:
     cumulative_density: array
         1D grid of cumulative densities
     """
-    eccentricity_grid_len = len(eccentricity_grid)
-    # Normalise to all positive
-    if np.min(log_likelihood_grid) < 0:
-        log_likelihood_grid = log_likelihood_grid + abs(np.min(log_likelihood_grid))
-    # Normalise so that sum = 1
-    log_likelihood_grid = log_likelihood_grid / np.sum(log_likelihood_grid)
-    cumulative_density = [
-        np.sum(log_likelihood_grid[0:i])
-        for i in range(eccentricity_grid_len)
-    ]
-    return cumulative_density
+    likelihood_grid = np.exp(log_likelihood_grid)
+    cumulative_density = np.cumsum(likelihood_grid)
+    cumulative_density_normalised = cumulative_density / cumulative_density[-1]
+    return cumulative_density_normalised
 
 
 def new_weight(
@@ -263,9 +254,7 @@ def new_weight(
         )
     intermediate_outfile.close()
     # Now compute the CDF:
-    cumulative_density_grid = cumulative_density_function(
-        log_likelihood_grid, eccentricity_grid
-    )
+    cumulative_density_grid = cumulative_density_function(log_likelihood_grid)
     # We want to pick a weighted random point from within the CDF
     e = pick_weighted_random_eccentricity(cumulative_density_grid, eccentricity_grid)
     # Also return eccentricity-marginalised log-likelihood

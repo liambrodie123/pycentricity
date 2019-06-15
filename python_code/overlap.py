@@ -193,11 +193,11 @@ def process_signal(waveform, comparison_length):
         if waveform_length < comparison_length:
             n_indices_to_pad = comparison_length - waveform_length
             waveform = {
-                key: np.concatenate(([0] * n_indices_to_pad, waveform["plus"])) for key in waveform.keys()
+                key: np.concatenate(([0] * n_indices_to_pad, waveform[key])) for key in waveform.keys()
             }
         elif waveform_length > comparison_length:
             n_indices_to_remove = waveform_length - comparison_length
-            waveform  = {
+            waveform = {
                 key: waveform[key][n_indices_to_remove:] for key in waveform.keys()
             }
     return waveform

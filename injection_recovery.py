@@ -113,7 +113,7 @@ priors["phase"] = bb.core.prior.Uniform(
     name="phase", minimum=0, maximum=2 * np.pi, boundary="periodic"
 )
 priors["geocent_time"] = bb.core.prior.Uniform(
-    name="phase",
+    name="geocent_time",
     minimum=injection_parameters["geocent_time"] - (deltaT / 2),
     maximum=injection_parameters["geocent_time"] + (deltaT / 2),
 )

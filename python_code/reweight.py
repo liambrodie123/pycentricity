@@ -341,7 +341,7 @@ def reweight_by_eccentricity(
     for i, log_L in enumerate(log_likelihood):
         # If the spins are too large, the sample may fail to generate eccentric waveforms,
         # so we impose a moderate-spin prior here
-        if any([parameter_list[i]['chi_1'], parameter_list[i]['chi_2']]) > 0.6:
+        if any([parameter_list[i]['chi_1'] > 0.6, parameter_list[i]['chi_2'] > 0.6]):
             print(
                     'omitting sample; chi_1 = ' + str(parameter_list[i]['chi_1'])
                     + ', chi_2 = ' + str(parameter_list[i]['chi_2'])

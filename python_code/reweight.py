@@ -232,7 +232,7 @@ def new_weight(
             minimum_frequency=minimum_frequency - 10,
             maximum_frequency=maximum_frequency + 1000,
         )
-        if t == None:
+        if t is None:
             print('No waveform generated; disregard sample ' + label)
             intermediate_outfile.write(
                 str(e)

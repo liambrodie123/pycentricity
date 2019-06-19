@@ -222,6 +222,8 @@ def new_weight(
         intermediate_outfile.write(key + ":\t" + str(parameters[key]) + "\n")
     intermediate_outfile.write("\n-------------------------\n")
     intermediate_outfile.write("e\t\tlog_L\t\tmaximised_overlap\n")
+    # Prepare for the possibility that we have to disregard this sample
+    disregard = False
     for e in eccentricity_grid:
         parameters.update({"eccentricity": e})
         t, seobnre_waveform_time_domain = wf.seobnre_bbh_with_spin_and_eccentricity(
@@ -230,37 +232,52 @@ def new_weight(
             minimum_frequency=minimum_frequency - 10,
             maximum_frequency=maximum_frequency + 1000,
         )
-        seobnre_wf_td, seobnre_wf_fd, max_overlap, index_shift, phase_shift = ovlp.maximise_overlap(
-            seobnre_waveform_time_domain,
-            comparison_waveform_frequency_domain,
-            sampling_frequency,
-            interferometers[0].frequency_array,
-            interferometers[0].power_spectral_density,
-        )
-        seobnre_wf_fd = ovlp.zero_pad_frequency_domain_signal(
-            seobnre_wf_fd, interferometers
-        )
-        eccentric_log_L = log_likelihood_ratio(
-            seobnre_wf_fd, interferometers, parameters, duration
-        )
-        log_likelihood_grid.append(eccentric_log_L)
-        intermediate_outfile.write(
-            str(e)
-            + "\t\t"
-            + str(eccentric_log_L)
-            + "\t\t"
-            + str(max_overlap)
-            + "\n"
-        )
+        if t == None:
+            print('No waveform generated; disregard sample ' + label)
+            intermediate_outfile.write(
+                str(e)
+                + "\t\t"
+                + str(None)
+                + "\t\t"
+                + str(None)
+                + "\n"
+            )
+            disregard = True
+        else:
+            seobnre_wf_td, seobnre_wf_fd, max_overlap, index_shift, phase_shift = ovlp.maximise_overlap(
+                seobnre_waveform_time_domain,
+                comparison_waveform_frequency_domain,
+                sampling_frequency,
+                interferometers[0].frequency_array,
+                interferometers[0].power_spectral_density,
+            )
+            seobnre_wf_fd = ovlp.zero_pad_frequency_domain_signal(
+                seobnre_wf_fd, interferometers
+            )
+            eccentric_log_L = log_likelihood_ratio(
+                seobnre_wf_fd, interferometers, parameters, duration
+            )
+            log_likelihood_grid.append(eccentric_log_L)
+            intermediate_outfile.write(
+                str(e)
+                + "\t\t"
+                + str(eccentric_log_L)
+                + "\t\t"
+                + str(max_overlap)
+                + "\n"
+            )
     intermediate_outfile.close()
-    cumulative_density_grid = cumulative_density_function(log_likelihood_grid)
-    # We want to pick a weighted random point from within the CDF
-    e = pick_weighted_random_eccentricity(cumulative_density_grid, eccentricity_grid)
-    # Also return eccentricity-marginalised log-likelihood
-    average_log_likelihood = np.mean(log_likelihood_grid)
-    # The weight is the ratio of this to the log likelihood
-    log_weight = average_log_likelihood - recalculated_log_likelihood
-    return e, average_log_likelihood, log_weight
+    if not disregard:
+        cumulative_density_grid = cumulative_density_function(log_likelihood_grid)
+        # We want to pick a weighted random point from within the CDF
+        e = pick_weighted_random_eccentricity(cumulative_density_grid, eccentricity_grid)
+        # Also return eccentricity-marginalised log-likelihood
+        average_log_likelihood = np.mean(log_likelihood_grid)
+        # The weight is the ratio of this to the log likelihood
+        log_weight = average_log_likelihood - recalculated_log_likelihood
+        return e, average_log_likelihood, log_weight
+    else:
+        return None, None, None
 
 
 def reweight_by_eccentricity(

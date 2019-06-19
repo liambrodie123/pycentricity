@@ -230,53 +230,37 @@ def new_weight(
             minimum_frequency=minimum_frequency - 10,
             maximum_frequency=maximum_frequency + 1000,
         )
-        if t is not None:
-            seobnre_wf_td, seobnre_wf_fd, max_overlap, index_shift, phase_shift = ovlp.maximise_overlap(
-                seobnre_waveform_time_domain,
-                comparison_waveform_frequency_domain,
-                sampling_frequency,
-                interferometers[0].frequency_array,
-                interferometers[0].power_spectral_density,
-            )
-            seobnre_wf_fd = ovlp.zero_pad_frequency_domain_signal(
-                seobnre_wf_fd, interferometers
-            )
-            eccentric_log_L = log_likelihood_ratio(
-                seobnre_wf_fd, interferometers, parameters, duration
-            )
-            log_likelihood_grid.append(eccentric_log_L)
-            intermediate_outfile.write(
-                str(e)
-                + "\t\t"
-                + str(eccentric_log_L)
-                + "\t\t"
-                + str(max_overlap)
-                + "\n"
-            )
-        else:
-            log_likelihood_grid.append(None)
-            intermediate_outfile.write(
-                str(e)
-                + "\t\t"
-                + 'None'
-                + "\t\t"
-                + 'None'
-                + "\n"
-            )
+        seobnre_wf_td, seobnre_wf_fd, max_overlap, index_shift, phase_shift = ovlp.maximise_overlap(
+            seobnre_waveform_time_domain,
+            comparison_waveform_frequency_domain,
+            sampling_frequency,
+            interferometers[0].frequency_array,
+            interferometers[0].power_spectral_density,
+        )
+        seobnre_wf_fd = ovlp.zero_pad_frequency_domain_signal(
+            seobnre_wf_fd, interferometers
+        )
+        eccentric_log_L = log_likelihood_ratio(
+            seobnre_wf_fd, interferometers, parameters, duration
+        )
+        log_likelihood_grid.append(eccentric_log_L)
+        intermediate_outfile.write(
+            str(e)
+            + "\t\t"
+            + str(eccentric_log_L)
+            + "\t\t"
+            + str(max_overlap)
+            + "\n"
+        )
     intermediate_outfile.close()
-    # Now compute the CDF, if the entire grid was generated successfully:
-    if None not in log_likelihood_grid:
-        cumulative_density_grid = cumulative_density_function(log_likelihood_grid)
-        # We want to pick a weighted random point from within the CDF
-        e = pick_weighted_random_eccentricity(cumulative_density_grid, eccentricity_grid)
-        # Also return eccentricity-marginalised log-likelihood
-        average_log_likelihood = np.mean(log_likelihood_grid)
-        # The weight is the ratio of this to the log likelihood
-        log_weight = average_log_likelihood - recalculated_log_likelihood
-        return e, average_log_likelihood, log_weight
-    else:
-        print('Abort sample ' + label)
-        return None, None, None
+    cumulative_density_grid = cumulative_density_function(log_likelihood_grid)
+    # We want to pick a weighted random point from within the CDF
+    e = pick_weighted_random_eccentricity(cumulative_density_grid, eccentricity_grid)
+    # Also return eccentricity-marginalised log-likelihood
+    average_log_likelihood = np.mean(log_likelihood_grid)
+    # The weight is the ratio of this to the log likelihood
+    log_weight = average_log_likelihood - recalculated_log_likelihood
+    return e, average_log_likelihood, log_weight
 
 
 def reweight_by_eccentricity(
@@ -355,30 +339,47 @@ def reweight_by_eccentricity(
     outfile = open(output_folder + "/" + label + "_master_output_store.txt", "w")
     outfile.write("i\t\te\t\tnew_log_L\t\tlog_w\n")
     for i, log_L in enumerate(log_likelihood):
-        eccentricity, new_log_L, log_weight = new_weight(
-            log_L,
-            parameter_list[i],
-            comparison_waveform_strain_list[i],
-            interferometers,
-            duration,
-            sampling_frequency,
-            minimum_frequency,
-            maximum_frequency,
-            output_folder + "/" + label + "_" + str(i),
-        )
-        outfile.write(
-            str(i)
-            + "\t\t"
-            + str(eccentricity)
-            + "\t\t"
-            + str(new_log_L)
-            + "\t\t"
-            + str(log_weight)
-            + "\n"
-        )
-        output["eccentricity"].append(eccentricity)
-        output["new_log_L"].append(new_log_L)
-        output["log_weight"].append(log_weight)
+        # If the spins are too large, the sample may fail to generate eccentric waveforms,
+        # so we impose a moderate-spin prior here
+        if any([parameter_list[i]['chi_1'], parameter_list[i]['chi_2']]) > 0.6:
+            output["eccentricity"].append(None)
+            output["new_log_L"].append(None)
+            output["log_weight"].append(None)
+            outfile.write(
+                str(i)
+                + "\t\t"
+                + str(None)
+                + "\t\t"
+                + str(None)
+                + "\t\t"
+                + str(None)
+                + "\n"
+            )
+        else:
+            eccentricity, new_log_L, log_weight = new_weight(
+                log_L,
+                parameter_list[i],
+                comparison_waveform_strain_list[i],
+                interferometers,
+                duration,
+                sampling_frequency,
+                minimum_frequency,
+                maximum_frequency,
+                output_folder + "/" + label + "_" + str(i),
+            )
+            outfile.write(
+                str(i)
+                + "\t\t"
+                + str(eccentricity)
+                + "\t\t"
+                + str(new_log_L)
+                + "\t\t"
+                + str(log_weight)
+                + "\n"
+            )
+            output["eccentricity"].append(eccentricity)
+            output["new_log_L"].append(new_log_L)
+            output["log_weight"].append(log_weight)
         print(
             "new weight calculation {}% complete".format(
                 np.round(i / number_of_samples * 100, 2)

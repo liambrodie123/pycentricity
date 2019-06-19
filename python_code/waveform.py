@@ -108,25 +108,21 @@ def seobnre_bbh_with_spin_and_eccentricity(
     subprocess.Popen(
         execute, cwd=c_code, stdout=subprocess.PIPE, stderr=subprocess.PIPE
     ).wait()
-    try:
-        # Read in the time-domain waveform
-        t, seobnre = read_in_seobnre(c_code + outfile_name)
-        # Plot if requested
-        if plot:
-            fig = plt.figure()
-            plt.plot(t, seobnre["plus"], label="SEOBNRe+")
-            plt.plot(t, seobnre["cross"], label="SEOBNRex")
-            plt.xlabel("Time (s)")
-            plt.ylabel("Strain")
-            plt.legend()
-            plt.show()
-        # Clear up the file
-        subprocess.Popen(
-            ["rm", outfile_name], cwd=c_code, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        )
-    except FileNotFoundError:
-        t = None
-        seobnre = None
+    # Read in the time-domain waveform
+    t, seobnre = read_in_seobnre(c_code + outfile_name)
+    # Plot if requested
+    if plot:
+        fig = plt.figure()
+        plt.plot(t, seobnre["plus"], label="SEOBNRe+")
+        plt.plot(t, seobnre["cross"], label="SEOBNRex")
+        plt.xlabel("Time (s)")
+        plt.ylabel("Strain")
+        plt.legend()
+        plt.show()
+    # Clear up the file
+    subprocess.Popen(
+        ["rm", outfile_name], cwd=c_code, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
     return t, seobnre
 
 

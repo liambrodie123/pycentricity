@@ -121,6 +121,19 @@ minimum_frequency = dict(
     GW170823=20,
 )
 
+sampling_frequency = dict(
+    GW150914=4096,
+    GW151012=4096,
+    GW151226=4096,
+    GW170104=4096,
+    GW170608=2 * 4096,
+    GW170729=4096,
+    GW170809=4096,
+    GW170814=4096,
+    GW170818=4096,
+    GW170823=4096,
+)
+
 search_keys = [
     "mass_ratio",
     "chirp_mass",

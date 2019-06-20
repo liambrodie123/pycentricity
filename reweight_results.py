@@ -7,7 +7,6 @@ import python_code.reweight as rwt
 import python_code.waveform as wf
 
 import json
-import gwpy
 import argparse
 
 
@@ -25,11 +24,11 @@ log_likelihoods = json_data["log_likelihoods"]
 
 # Set up the basic properties of the runs
 maximum_frequency = 1024
-sampling_frequency = 4096
 post_trigger_duration = 2
 deltaT = 0.2
 
 # Read event-specific properties from the utils file
+sampling_frequency = utils.sampling_frequency[args.event]
 minimum_frequency = utils.minimum_frequency[args.event]
 duration = utils.event_duration[args.event]
 detectors = utils.event_detectors[args.event]

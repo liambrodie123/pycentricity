@@ -226,10 +226,11 @@ def new_weight(
     disregard = False
     for e in eccentricity_grid:
         parameters.update({"eccentricity": e})
+        # Need to have a set minimum frequency, since this is also the reference frequency
         t, seobnre_waveform_time_domain = wf.seobnre_bbh_with_spin_and_eccentricity(
             parameters=parameters,
             sampling_frequency=sampling_frequency,
-            minimum_frequency=minimum_frequency - 10,
+            minimum_frequency=10,
             maximum_frequency=maximum_frequency + 1000,
         )
         if t is None:

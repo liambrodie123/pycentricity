@@ -164,7 +164,6 @@ def new_weight(
     interferometers,
     duration,
     sampling_frequency,
-    minimum_frequency,
     maximum_frequency,
     label,
 ):
@@ -285,7 +284,6 @@ def reweight_by_eccentricity(
     samples,
     log_likelihood,
     sampling_frequency,
-    minimum_frequency,
     comparison_waveform_generator,
     interferometers,
     duration,
@@ -385,7 +383,6 @@ def reweight_by_eccentricity(
                 interferometers,
                 duration,
                 sampling_frequency,
-                minimum_frequency,
                 maximum_frequency,
                 output_folder + "/" + label + "_" + str(i),
             )

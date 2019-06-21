@@ -62,7 +62,6 @@ output = rwt.reweight_by_eccentricity(
     samples,
     log_likelihoods,
     sampling_frequency,
-    minimum_frequency,
     waveform_generator,
     interferometers,
     duration,

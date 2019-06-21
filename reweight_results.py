@@ -26,17 +26,18 @@ log_likelihoods = json_data["log_likelihoods"]
 maximum_frequency = 1024
 post_trigger_duration = 2
 deltaT = 0.2
+wf_minimum_frequency = 20
 
 # Read event-specific properties from the utils file
 sampling_frequency = utils.sampling_frequency[args.event]
-minimum_frequency = utils.minimum_frequency[args.event]
+ifo_minimum_frequency = utils.minimum_frequency[args.event]
 duration = utils.event_duration[args.event]
 detectors = utils.event_detectors[args.event]
 trigger_time = utils.trigger_time[args.event]
 
 # Generate the comparison waveform generator
 waveform_generator = wf.get_IMRPhenomD_comparison_waveform_generator(
-    minimum_frequency, sampling_frequency, duration
+    wf_minimum_frequency, sampling_frequency, duration
 )
 # Frequency array
 frequency_array = waveform_generator.frequency_array
@@ -56,7 +57,7 @@ for ifo in interferometers:
     ifo.power_spectral_density = bb.gw.detector.PowerSpectralDensity.from_power_spectral_density_file(
         psd_file=utils.event_psd_file_path[args.event][ifo.name]
     )
-    ifo.minimum_frequency = minimum_frequency
+    ifo.minimum_frequency = ifo_minimum_frequency
     ifo.maximum_frequency = maximum_frequency
 
 # Output to the folder with all of the result subsets
@@ -71,7 +72,6 @@ output = rwt.reweight_by_eccentricity(
     samples,
     log_likelihoods,
     sampling_frequency,
-    minimum_frequency,
     waveform_generator,
     interferometers,
     duration,

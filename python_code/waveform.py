@@ -26,7 +26,7 @@ def read_in_seobnre(filename):
     hc = []
     for line in open(filename, "r"):
         if "#" not in line:
-            line_split = line.split()
+            line_split = line.replace('\x00', '').split()
             t.append(float(line_split[0]))
             hp.append(float(line_split[1]))
             hc.append(float(line_split[2]))

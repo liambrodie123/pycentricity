@@ -64,8 +64,8 @@ event_psd_file_path = dict(
         + "O2/PE/GW170104/rerun_O2_catalog/BayesWave_median_PSD_L1.dat",
     ),
     GW170608=dict(
-        H1=psd_files_base_path + "/O2/PE/GW170608/GW170608_C02_reruns/l1_psd_C02.dat",
-        L1=psd_files_base_path + "O2/PE/GW170608/GW170608_C02_reruns/h1_psd_C02.dat",
+        H1=psd_files_base_path + "/O2/PE/GW170608/GW170608_C02_reruns/h1_psd_C02.dat",
+        L1=psd_files_base_path + "O2/PE/GW170608/GW170608_C02_reruns/l1_psd_C02.dat",
     ),
     GW170729=dict(
         H1=psd_files_base_path + "O2/PE/GW170729/Median_PSD_H1.dat",

@@ -88,7 +88,7 @@ int XLALSimInspiralChooseTDWaveform(
     return ret;
 }
 
-/**Ö÷ÒªµÄ¼ÆËã³ÌÐòº¯Êý
+/**ï¿½ï¿½Òªï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  * This function generates spin-aligned SEOBNRv1 waveforms h+ and hx.  
  * Currently, only the h22 harmonic is available.
  * STEP 0) Prepare parameters, including pre-computed coefficients 
@@ -279,12 +279,12 @@ int XLALSimIMRSpinAlignedEOBWaveform(
 
 
   /* If Nyquist freq < 220 QNM freq, exit */
-  if ( deltaT > LAL_PI / creal(modeFreq) )
-  {
-    printf( "XLAL Error -: Ringdown frequency > Nyquist frequency!\nAt present this situation is not supported.\n");
-    XLALDestroyREAL8Vector( values );
-    return -1;
-  }
+//  if ( deltaT > LAL_PI / creal(modeFreq) )
+//  {
+//    printf( "XLAL Error -: Ringdown frequency > Nyquist frequency!\nAt present this situation is not supported.\n");
+//    XLALDestroyREAL8Vector( values );
+//    return -1;
+//  }
 
   if ( !(sigmaStar = XLALCreateREAL8Vector( 3 )) )
   {

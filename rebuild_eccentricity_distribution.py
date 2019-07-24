@@ -49,9 +49,14 @@ for single_file in result_files:
         else:
             print('disregarding file ' + single_file)
 
+storage_file = args.results_folder + '/eccentricity_histogram_data.txt'
+with open(storage_file, 'w') as f:
+    for eccentricity in eccentricity_distribution:
+        f.write(str(eccentricity) + '\n')
+
 fig = plt.figure()
 plt.hist(eccentricity_distribution, bins=np.logspace(-4, np.log10(0.2)))
 plt.xlabel('eccentricity, $e$')
 
-output_file = args.results_folder + 'eccentricity_histogram.pdf'
+output_file = args.results_folder + '/eccentricity_histogram.pdf'
 plt.savefig(output_file, bbox_inches='tight')

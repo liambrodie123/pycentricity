@@ -153,8 +153,9 @@ def cumulative_density_function(log_likelihood_grid):
     """
     # IRS - (temporary?) edits to deal with extremely high values of log likelihood
     minimum_log_likelihood = np.min(log_likelihood_grid)
-    # Ratio of likelihood to minimum log likelihood
-    log_likelihood_grid = log_likelihood_grid - minimum_log_likelihood
+    maximum_log_likelihood = np.max(log_likelihood_grid)
+    # Ratio of likelihood to maximum log likelihood
+    log_likelihood_grid = log_likelihood_grid - maximum_log_likelihood
     likelihood_grid = np.exp(log_likelihood_grid)
     cumulative_density = np.cumsum(likelihood_grid)
     cumulative_density_normalised = cumulative_density / cumulative_density[-1]
